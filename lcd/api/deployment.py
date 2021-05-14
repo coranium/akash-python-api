@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import attr
 
-from lcd.core import AccAddress, Coin
+from lcd.core import AccAddress
 
 from ._base import BaseAsyncAPI, sync_bind
 
