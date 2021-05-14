@@ -1,0 +1,2 @@
+Built on [`terra-python-sdk`](https://github.com/terra-project/terra-sdk-python) from the legends at [Terra](http://terra.money/)\
+Just took the API parts and modified to work with [Akash](https://akash.network/) blockchain.
