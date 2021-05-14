@@ -13,7 +13,7 @@ Very brief tutorial on Colab [![](https://colab.research.google.com/assets/colab
 `pip install terra_sdk`
 
 ## Quickstart
-Get API_URL and CHAIN_ID from https://github.com/ovrclk/net\
+Get API_URL and CHAIN_ID from https://github.com/ovrclk/net
 
 Initialise client using:\
 `from lcd import LCDClient`\
