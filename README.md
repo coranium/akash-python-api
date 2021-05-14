@@ -16,7 +16,7 @@ Very brief tutorial on Colab [![](https://colab.research.google.com/assets/colab
 Get API_URL and CHAIN_ID from https://github.com/ovrclk/net\
 
 Initialise client using:\
-`from lcd import LCDClient`
+`from lcd import LCDClient`\
 `akash = LCDClient(chain_id=CHAIN_ID, url=API_URL)`
 
 Most modules from `terra-python-sdk` should work. Refer to their [docs](https://terra-project.github.io/terra-sdk-python/).
