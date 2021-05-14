@@ -46,7 +46,7 @@ class AsyncDeploymentAPI(BaseAsyncAPI):
         dseq: Optional[int] = None,
         state: Optional[str] = None,
         limit: Optional[int] = 100,
-    ) -> dict:
+    ) -> List:
         '''Fetches a list of deployment info with optional filters
         
         Args:
@@ -61,7 +61,6 @@ class AsyncDeploymentAPI(BaseAsyncAPI):
             "filters.dseq": dseq,
             'filters.state': state,
             'pagination.limit':limit,
-            'pagination.count_total':'True'
         }
 
         # temporary fix to get rid of optional params/payload
@@ -76,7 +75,7 @@ class AsyncDeploymentAPI(BaseAsyncAPI):
                 raw=True
             )
 
-        return res
+        return res['deployments']
 
 class DeploymentAPI(AsyncDeploymentAPI):
     @sync_bind(AsyncDeploymentAPI.info)
@@ -96,6 +95,6 @@ class DeploymentAPI(AsyncDeploymentAPI):
         dseq: Optional[int] = None,
         state: Optional[str] = None,
         limit: Optional[int] = 100,
-    ) -> dict:
+    ) -> List:
         pass
     get_all.__doc__ = AsyncDeploymentAPI.get_all.__doc__
