@@ -26,30 +26,31 @@ class AsyncStakingAPI(BaseAsyncAPI):
         self,
         delegator: Optional[AccAddress] = None,
         validator: Optional[ValAddress] = None,
+        num_results: int = 100,
     ) -> List[Delegation]:
         """Fetches current delegations, filtering by delegator, validator, or both.
 
         Args:
             delegator (Optional[AccAddress], optional): delegator account address.
             validator (Optional[ValAddress], optional): validator operator address.
-
+            num_results: Specifies number of results to get when querying delegations from a single validator.
         Raises:
             TypeError: if both ``delegator`` and ``validator`` are ``None``.
 
         Returns:
             List[Delegation]: delegations
         """
+        params = {'pagination.limit': str(num_results),
+                }
         if delegator is not None and validator is not None:
-            res = await self._c._get(
-                f"/staking/delegators/{delegator}/delegations/{validator}"
-            )
+            res = await self._c._get(f"/staking/delegators/{delegator}/delegations/{validator}")
             return [Delegation.from_data(res)]
         elif delegator is not None:
             res = await self._c._get(f"/staking/delegators/{delegator}/delegations")
             return [Delegation.from_data(d) for d in res]
         elif validator is not None:
-            res = await self._c._get(f"/staking/validators/{validator}/delegations")
-            return [Delegation.from_data(d) for d in res]
+            res = await self._c._get(f"/cosmos/staking/v1beta1/validators/{validator}/delegations", params, raw=True)
+            return [Delegation.from_data(d) for d in res['delegation_responses']]
         else:
             raise TypeError("arguments delegator and validator cannot both be None")
 
@@ -74,12 +75,14 @@ class AsyncStakingAPI(BaseAsyncAPI):
         self,
         delegator: Optional[AccAddress] = None,
         validator: Optional[ValAddress] = None,
+        num_results: int = 100
     ) -> List[UnbondingDelegation]:
         """Fetches current undelegations, filtering by delegator, validator, or both.
 
         Args:
             delegator (Optional[AccAddress], optional): delegator account address.
             validator (Optional[ValAddress], optional): validator operator address.
+            num_results: specify number of queries to return when looking at all unbondings from 1 validator.
 
         Raises:
             TypeError: if both ``delegator`` and ``validator`` are ``None``.
@@ -87,6 +90,8 @@ class AsyncStakingAPI(BaseAsyncAPI):
         Returns:
             List[UnbondingDelegation]: undelegations
         """
+        params = {'pagination.limit': str(num_results)}
+        
         if delegator is not None and validator is not None:
             res = await self._c._get(
                 f"/staking/delegators/{delegator}/unbonding_delegations/{validator}"
@@ -99,9 +104,9 @@ class AsyncStakingAPI(BaseAsyncAPI):
             return [UnbondingDelegation.from_data(x) for x in res]
         elif validator is not None:
             res = await self._c._get(
-                f"/staking/validators/{validator}/unbonding_delegations"
+                f"/cosmos/staking/v1beta1/validators/{validator}/unbonding_delegations", params, raw=True
             )
-            return [UnbondingDelegation.from_data(x) for x in res]
+            return [UnbondingDelegation.from_data(x) for x in res['unbonding_responses']]
         else:
             raise TypeError("arguments delegator and validator cannot both be None")
 
@@ -212,6 +217,7 @@ class StakingAPI(AsyncStakingAPI):
         self,
         delegator: Optional[AccAddress] = None,
         validator: Optional[ValAddress] = None,
+        num_results: int = None,
     ) -> List[Delegation]:
         pass
 
@@ -228,6 +234,7 @@ class StakingAPI(AsyncStakingAPI):
         self,
         delegator: Optional[AccAddress] = None,
         validator: Optional[ValAddress] = None,
+        num_results: int = 100,
     ) -> List[UnbondingDelegation]:
         pass
 
