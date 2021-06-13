@@ -2,7 +2,7 @@ from typing import Dict
 
 import attr
 
-from lcd.core import AccAddress, Coins, ValAddress
+from lcd.core import AccAddress, Coins, ValAddress, Coin
 
 from ._base import BaseAsyncAPI, sync_bind
 
@@ -47,7 +47,7 @@ class AsyncDistributionAPI(BaseAsyncAPI):
         )
 
     async def validator_rewards(self, validator: ValAddress) -> ValidatorRewards:
-        """Fetches the commission reward data for a validator.
+        """Fetches the self-delegation reward data and available commission for a validator.
 
         Args:
             validator (ValAddress): validator operator address
@@ -56,10 +56,16 @@ class AsyncDistributionAPI(BaseAsyncAPI):
             ValidatorRewards: validator rewards
         """
         res = await self._c._get(f"/distribution/validators/{validator}")
-        return ValidatorRewards(
-            self_bond_rewards=Coins.from_data(res["self_bond_rewards"]),
-            val_commission=Coins.from_data(res["val_commission"]['commission']),
-        )
+        if res["self_bond_rewards"]:
+            self_bond_rewards=Coins.from_data(res["self_bond_rewards"])
+        else: self_bond_rewards = Coin.from_data({'denom':'uakt','amount':0})
+        
+        if res["val_commission"]['commission']:
+            val_commission=Coins.from_data(res["val_commission"]['commission'])
+        else: val_commission = Coin.from_data({'denom':'uakt','amount':0})
+
+        return ValidatorRewards(self_bond_rewards, val_commission)
+    
 
     async def withdraw_address(self, delegator: AccAddress) -> AccAddress:
         """Fetches the withdraw address associated with a delegator.
