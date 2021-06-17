@@ -26,6 +26,8 @@ class ValidatorRewards:
     val_commission: Coins = attr.ib()
     """Rewards for validator accrued from delegation commissions."""
 
+    operator_address: AccAddress = attr.ib()
+    """Operator or self delegate address for validator"""
 
 class AsyncDistributionAPI(BaseAsyncAPI):
     async def rewards(self, delegator: AccAddress) -> Rewards:
@@ -56,6 +58,9 @@ class AsyncDistributionAPI(BaseAsyncAPI):
             ValidatorRewards: validator rewards
         """
         res = await self._c._get(f"/distribution/validators/{validator}")
+
+        operator_address = res["operator_address"]
+
         if res["self_bond_rewards"]:
             self_bond_rewards=Coins.from_data(res["self_bond_rewards"])
         else: self_bond_rewards = Coin.from_data({'denom':'uakt','amount':0})
@@ -64,7 +69,7 @@ class AsyncDistributionAPI(BaseAsyncAPI):
             val_commission=Coins.from_data(res["val_commission"]['commission'])
         else: val_commission = Coin.from_data({'denom':'uakt','amount':0})
 
-        return ValidatorRewards(self_bond_rewards, val_commission)
+        return ValidatorRewards(self_bond_rewards, val_commission, operator_address)
     
 
     async def withdraw_address(self, delegator: AccAddress) -> AccAddress:
